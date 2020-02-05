@@ -8,6 +8,11 @@ export async function createTypesFromSchema(
   schemas: Array<GraphQLSchema>,
   typesOutputFiles: Array<string>
 ): Promise<void> {
+  if (schemas.length !== typesOutputFiles.length)
+    throw new Error(
+      'The numbers of schemas and typesOutputFiles are not matched!'
+    );
+
   for (let i = 0; i < schemas.length; i++) {
     const config = {
       filename: typesOutputFiles[i],

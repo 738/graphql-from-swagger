@@ -14,6 +14,11 @@ export async function createSchemaFromSwagger(
   swaggerPaths: Array<string>,
   schemaOutputFiles: Array<string>
 ): Promise<Array<GraphQLSchema>> {
+  if (swaggerPaths.length !== schemaOutputFiles.length)
+    throw new Error(
+      'The numbers of swaggerPaths and schemaOutputFiles are not matched!'
+    );
+
   const schemas: Array<GraphQLSchema> = [];
   for (let i = 0; i < swaggerPaths.length; i++) {
     const schema: GraphQLSchema = await createSchema({
@@ -28,5 +33,6 @@ export async function createSchemaFromSwagger(
     // TODO: 스키마 각 파일에 쓰기
     schemas.push(schema);
   }
+
   return schemas;
 }
