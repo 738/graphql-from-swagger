@@ -1,0 +1,22 @@
+{
+  "name": "apollo-datasource-swagger",
+  "version": "0.0.1",
+  "main": "index.js",
+  "repository": "git@oss.navercorp.com:junwoo-ji/apollo-datasource-swagger.git",
+  "author": "Junwoo Ji <junwoo.ji@navercorp.com>",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/node": "^13.7.0",
+    "typescript": "^3.7.5"
+  },
+  "dependencies": {
+    "@graphql-codegen/core": "^1.12.1",
+    "@graphql-codegen/typescript": "^1.12.1",
+    "apollo-datasource-rest": "^0.6.11",
+    "graphql": "^14.6.0",
+    "swagger-to-graphql": "^4.0.2"
+  },
+  "scripts": {
+    "dev": "ts-node src/index.ts"   
+  }
+}
