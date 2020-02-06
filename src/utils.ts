@@ -25,8 +25,9 @@ export function indent(str: string, count = 1): string {
 export function getRelativePath(from: string, to: string, ext: string = '.ts'): string {
   const targetFileName = path.basename(to, ext);
   let relativePath = path.relative(path.dirname(from), path.dirname(to));
-  if (relativePath === '') relativePath = './';
-  return relativePath + targetFileName;
+  if (relativePath === '') relativePath = '.';
+  if (targetFileName === 'index') return relativePath;
+  return `${relativePath}/${targetFileName}`
 }
 
 export function getInstanceNameFromClass(className: string): string {

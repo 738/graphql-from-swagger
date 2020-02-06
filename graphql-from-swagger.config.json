@@ -1,7 +1,7 @@
 {
-  "swaggerPaths": ["test/swagger.json", "https://petstore.swagger.io/v2/swagger.json"],
-  "schemaOutputFiles": ["generated/heroes.graphql", "generated/petstore.graphql"],
-  "typesOutputFiles": ["generated/HeroesTypes.ts", "generated/PetstoreTypes.ts"],
-  "restDataSourceOutputFiles": ["generated/HeroesApi.ts", "generated/PetstoreApi.ts"],
-  "resolversOutputFiles": ["generated/HeroesResolvers.ts", "generated/PetstoreResolvers.ts"]
+  "swaggerPaths": ["https://petstore.swagger.io/v2/swagger.json"],
+  "schemaOutputFiles": ["example/schema.graphql"],
+  "typesOutputFiles": ["example/types.ts"],
+  "restDataSourceOutputFiles": ["example/Api.ts"],
+  "resolversOutputFiles": ["example/resolvers.ts"]
 }
