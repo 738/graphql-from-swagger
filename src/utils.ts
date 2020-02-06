@@ -1,3 +1,5 @@
+import path from 'path';
+
 // deleteCustomerUsingDELETE -> MutationDeleteCustomerUsingDelete
 export function getArgsStringFromOperationId(operationId: string, method: string): string {
   const prefix = method === 'get' ? 'Query' : 'Mutation';
@@ -20,4 +22,9 @@ export function indent(str: string, count = 1): string {
 }
 
 // "../generated/HeroesApi.ts" 파일에서 "../generated/types1.ts" 파일의 상대경로는 "./types1"
-export function getRelativePath(sourcePath: string, targetPath: string) {}
+export function getRelativePath(from: string, to: string, ext: string = '.ts') {
+  const targetFileName = path.basename(to, ext);
+  let relativePath = path.relative(path.dirname(from), path.dirname(to));
+  if (relativePath === '') relativePath = './';
+  return relativePath + targetFileName;
+}

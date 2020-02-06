@@ -1,6 +1,6 @@
 import path from 'path';
 import fs from 'fs';
-import { getArgsStringFromOperationId, indent } from './utils';
+import { getArgsStringFromOperationId, indent, getRelativePath } from './utils';
 
 export async function createRESTDataSource(
   swaggerPaths: Array<string>,
@@ -75,7 +75,7 @@ export class ${className} extends RESTDataSource {
       `
 import {
   ${argTypes.join(',\n  ')}
-} from '${typesFiles[i]}';
+} from '${getRelativePath(restDataSourceOutputFiles[i], typesFiles[i])}';
     `.trim()
     );
 
@@ -89,7 +89,7 @@ export async function createResolvers(
   typesFiles: Array<string>,
   restDataSourceFiles: Array<string>,
   resolversOutputFiles: Array<string>
-) {
+): Promise<void> {
   const totalLength = swaggerPaths.length;
   if (typesFiles.length !== totalLength || restDataSourceFiles.length !== totalLength || resolversOutputFiles.length !== totalLength)
     throw new Error('The numbers of files are not matched!');
@@ -160,7 +160,7 @@ ${mutations.join('\n')}
       `
 import {
   ${argTypes.join(',\n  ')}
-} from '${typesFiles[i]}';
+} from '${getRelativePath(resolversOutputFiles[i], typesFiles[i])}';
     `.trim()
     );
     await fs.writeFileSync(path.join(__dirname, resolversOutputFiles[i]), [...imports, '', resolvers].join('\n'));
