@@ -27,7 +27,7 @@ export class ${className} extends RESTDataSource {
     super();
     this.baseURL = '${swaggerJSON.host.startsWith('http') ? swaggerJSON.host : 'http://' + swaggerJSON.host}';
   }
-    `.trimRight()
+    `.trim()
     );
 
     const functions: string[] = [];
@@ -55,8 +55,8 @@ export class ${className} extends RESTDataSource {
         const func: string[] = [];
         func.push('');
 
-        const argumentsString = args.length ? `{ ${args.join(', ')} }: ${getArgsStringFromOperationId(operationId, method)}Args` : '';
-        if (args.length) argTypes.push(`${getArgsStringFromOperationId(operationId, method)}Args`);
+        const argumentsString = args.length ? `{ ${args.join(', ')} }: ${getArgsStringFromOperationId(operationId, method)}` : '';
+        if (args.length) argTypes.push(`${getArgsStringFromOperationId(operationId, method)}`);
         func.push(indent(`async ${operationId}(${argumentsString}) {`));
 
         if (parameters['query']) func.push(indent(`const queries = { ${parameters['query'].join(', ')} };`, 2));
@@ -79,7 +79,91 @@ import {
     `.trim()
     );
 
-    await fs.writeFileSync(path.join(__dirname, restDataSourceOutputFiles[i]), [...imports, ...classSentences, ...functions, '}'].join('\n'));
+    await fs.writeFileSync(path.join(__dirname, restDataSourceOutputFiles[i]), [...imports, '', ...classSentences, ...functions, '}'].join('\n'));
     console.log(`${className} file generated!`);
+  }
+}
+
+export async function createResolvers(
+  swaggerPaths: Array<string>,
+  typesFiles: Array<string>,
+  restDataSourceFiles: Array<string>,
+  resolversOutputFiles: Array<string>
+) {
+  const totalLength = swaggerPaths.length;
+  if (typesFiles.length !== totalLength || restDataSourceFiles.length !== totalLength || resolversOutputFiles.length !== totalLength)
+    throw new Error('The numbers of files are not matched!');
+
+  for (let i = 0; i < totalLength; i++) {
+    const imports = [];
+    const queries = [];
+    const mutations = [];
+    const resolvers = [];
+    const argTypes = [];
+
+    const swaggerString = await fs.readFileSync(path.join(__dirname, swaggerPaths[i]), 'utf-8');
+    const swaggerJSON = JSON.parse(swaggerString);
+
+    const className = path.basename(restDataSourceFiles[i], '.ts');
+
+    for (let endpoint in swaggerJSON.paths) {
+      for (let method in swaggerJSON.paths[endpoint]) {
+        const field = swaggerJSON.paths[endpoint][method];
+        const operationId = field.operationId;
+        const parameters: { [key: string]: string[] } = {};
+
+        if (field.parameters) {
+          for (let parameter of field.parameters) {
+            if (parameters[parameter.in] !== undefined) {
+              parameters[parameter.in].push(parameter.name);
+            } else {
+              parameters[parameter.in] = [parameter.name];
+            }
+          }
+        }
+        const args = Object.keys(parameters).reduce((result: string[], param) => {
+          if (parameters[param] === undefined) return result;
+          return [...result, ...parameters[param]];
+        }, []);
+
+        if (args.length) argTypes.push(`${getArgsStringFromOperationId(operationId, method)}`);
+
+        if (method === 'get') {
+          queries.push(indent(`
+    ${operationId}: (_: any, args: ${args.length ? getArgsStringFromOperationId(operationId, method) : 'any'}, { dataSources }: any) => {
+      return dataSources.${className}.${operationId}(${args.length ? 'args' : ''});
+    },
+          `.trim(), 2));
+        } else {
+          mutations.push(indent(`
+    ${operationId}: (_: any, args: ${args.length ? getArgsStringFromOperationId(operationId, method) : 'any'}, { dataSources }: any) => {
+      return dataSources.${className}.${operationId}(${args.length ? 'args' : ''});
+    },
+          `.trim(), 2));
+        }
+      }
+    }
+    resolvers.push(
+      `
+export const resolvers = {
+  Query: {
+${queries.join('\n')}
+  },
+  Mutation: {
+${mutations.join('\n')}
+  }
+}
+    `.trim()
+    );
+
+    imports.push(
+      `
+import {
+  ${argTypes.join(',\n  ')}
+} from '${typesFiles[i]}';
+    `.trim()
+    );
+    await fs.writeFileSync(path.join(__dirname, resolversOutputFiles[i]), [...imports, '', resolvers].join('\n'));
+    console.log(`${className} resolvers file generated!`);
   }
 }

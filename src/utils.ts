@@ -1,5 +1,4 @@
-
-// deleteCustomerUsingDELETE -> deleteCustomerUsingDelete
+// deleteCustomerUsingDELETE -> MutationDeleteCustomerUsingDelete
 export function getArgsStringFromOperationId(operationId: string, method: string): string {
   const prefix = method === 'get' ? 'Query' : 'Mutation';
   let prevChar: string = '';
@@ -7,11 +6,12 @@ export function getArgsStringFromOperationId(operationId: string, method: string
     prefix +
     operationId.split('').reduce((result: string, char, index) => {
       if (index === 0) return char.toUpperCase();
-      if (prevChar && prevChar === prevChar.toUpperCase() && char === char.toUpperCase()) result += char.toLowerCase();
+      if (/[A-Z]/.test(prevChar) && /[A-Z]/.test(char)) result += char.toLowerCase();
       else result += char;
       prevChar = char;
       return result;
-    }, '')
+    }, '') +
+    'Args'
   );
 }
 

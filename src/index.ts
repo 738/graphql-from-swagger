@@ -1,6 +1,6 @@
 import { createSchemaFromSwagger } from './swagger-to-graphql';
 import { createTypesFromSchema } from './graphql-code-generator';
-import { createRESTDataSource } from './apollo-datasource-rest';
+import { createRESTDataSource, createResolvers } from './apollo-datasource-rest';
 
 // TODO: 설정 파일에서 설정한 파일 경로들 읽기
 const swaggerPaths: Array<string> = ['../test/swagger.json'];
@@ -14,5 +14,5 @@ const resolversOutputFiles: Array<string> = ['../generated/heroesResolvers.ts'];
   const schemas = await createSchemaFromSwagger(swaggerPaths, schemaOutputFiles);
   await createTypesFromSchema(schemas, typesOutputFiles);
   await createRESTDataSource(swaggerPaths, typesOutputFiles, restDataSourceOutputFiles);
-  // await createResolvers(swaggerPaths, typesOutputFiles, resolversOutputFiles);
+  await createResolvers(swaggerPaths, typesOutputFiles, restDataSourceOutputFiles, resolversOutputFiles);
 })();
