@@ -1,6 +1,8 @@
 # graphql-from-swagger
 
-> 🍇 Swagger 파일 하나로 GraphQL 관련 코드를 생성해주는 CLI입니다.
+> 🍇 Swagger 하나로 GraphQL 관련 코드를 생성해주는 CLI입니다.
+
+![demo](./example/demo.gif)
 
 ## 개요
 
