@@ -1,9 +1,16 @@
 {
   "name": "apollo-datasource-swagger",
   "version": "0.0.1",
-  "main": "index.js",
-  "repository": "git@oss.navercorp.com:junwoo-ji/apollo-datasource-swagger.git",
-  "author": "Junwoo Ji <junwoo.ji@navercorp.com>",
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:738/graphql-from-swagger.git"
+  },
+  "author": "Junwoo Ji <jydrogen@gmail.com>",
+  "main": "lib/index.js",
+  "bin": {
+    "graphql-from-swagger": "bin/graphql-from-swagger.js"
+  },
+  "preferGlobal": true,
   "license": "MIT",
   "devDependencies": {
     "@types/node": "^13.7.0",
@@ -14,12 +21,28 @@
     "@graphql-codegen/core": "^1.12.1",
     "@graphql-codegen/typescript": "^1.12.1",
     "apollo-datasource-rest": "^0.6.11",
+    "commander": "^4.1.1",
     "graphql": "^14.6.0",
     "node-fetch": "^2.6.0",
     "pkg-dir": "^4.2.0",
     "swagger-to-graphql": "^4.0.2"
   },
   "scripts": {
-    "dev": "ts-node src/index.ts"
-  }
+    "dev": "ts-node src/index.ts",
+    "build": "tsc"
+  },
+  "keywords": [
+    "graphql",
+    "swagger",
+    "codegen",
+    "graphql-codegen",
+    "generator",
+    "apollo",
+    "apollographql",
+    "rest",
+    "apollo-datasource",
+    "apollo-datasource-rest",
+    "cli",
+    "terminal"
+  ]
 }
