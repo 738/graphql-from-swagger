@@ -23,6 +23,6 @@ export async function createTypesFromSchema(schemas: Array<GraphQLSchema>, types
     };
     const output = await codegen(config as any);
     await fs.writeFileSync(path.join(rootDir as string, typesOutputFiles[i]), output);
-    console.log('type Outputs generated!');
+    console.log(`Type Definition file (${path.join(rootDir as string, typesOutputFiles[i])}) was generated!`);
   }
 }

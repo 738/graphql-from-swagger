@@ -19,8 +19,7 @@ export async function createSchemaFromSwagger(swaggerPaths: Array<string>, schem
       callBackend
     });
     await fs.writeFileSync(path.join(rootDir as string, schemaOutputFiles[i]), printSchema(schema));
-    console.log('schema outputs generated!');
-    // TODO: 스키마 각 파일에 쓰기
+    console.log(`GraphQL Schema file (${path.join(rootDir as string, schemaOutputFiles[i])}) was generated!`);
     schemas.push(schema);
   }
 

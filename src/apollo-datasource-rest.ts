@@ -82,7 +82,7 @@ import {
     );
 
     await fs.writeFileSync(path.join(rootDir as string, restDataSourceOutputFiles[i]), [...imports, '', ...classSentences, ...functions, '}'].join('\n'));
-    console.log(`${className} file generated!`);
+    console.log(`RESTDataSource: ${className} file (${path.join(rootDir as string, restDataSourceOutputFiles[i])}) generated!`);
   }
 }
 
@@ -167,6 +167,6 @@ import {
     `.trim()
     );
     await fs.writeFileSync(path.join(rootDir as string, resolversOutputFiles[i]), [...imports, '', resolvers].join('\n'));
-    console.log(`${className} resolvers file generated!`);
+    console.log(`Resolvers: ${className} file (${path.join(rootDir as string, resolversOutputFiles[i])}) generated!`);
   }
 }
