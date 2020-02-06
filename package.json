@@ -14,9 +14,10 @@
     "@graphql-codegen/typescript": "^1.12.1",
     "apollo-datasource-rest": "^0.6.11",
     "graphql": "^14.6.0",
+    "pkg-dir": "^4.2.0",
     "swagger-to-graphql": "^4.0.2"
   },
   "scripts": {
-    "dev": "ts-node src/index.ts"   
+    "dev": "ts-node src/index.ts"
   }
 }

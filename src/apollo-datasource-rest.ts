@@ -1,6 +1,7 @@
 import path from 'path';
 import fs from 'fs';
-import { getArgsStringFromOperationId, indent, getRelativePath } from './utils';
+import { getArgsStringFromOperationId, indent, getRelativePath, getInstanceNameFromClass } from './utils';
+import pkgDir from 'pkg-dir';
 
 export async function createRESTDataSource(
   swaggerPaths: Array<string>,
@@ -9,13 +10,14 @@ export async function createRESTDataSource(
 ): Promise<void> {
   const totalLength = swaggerPaths.length;
   if (typesFiles.length !== totalLength || restDataSourceOutputFiles.length !== totalLength) throw new Error('The numbers of files are not matched!');
+  const rootDir = await pkgDir(__dirname);
 
   for (let i = 0; i < totalLength; i++) {
     const imports = [];
     imports.push(`import { RESTDataSource } from 'apollo-datasource-rest';`);
     imports.push(`import { URLSearchParams } from 'url';`);
 
-    const swaggerString = await fs.readFileSync(path.join(__dirname, swaggerPaths[i]), 'utf-8');
+    const swaggerString = await fs.readFileSync(path.join(rootDir as string, swaggerPaths[i]), 'utf-8');
     const swaggerJSON = JSON.parse(swaggerString);
 
     const className = path.basename(restDataSourceOutputFiles[i], '.ts');
@@ -79,7 +81,7 @@ import {
     `.trim()
     );
 
-    await fs.writeFileSync(path.join(__dirname, restDataSourceOutputFiles[i]), [...imports, '', ...classSentences, ...functions, '}'].join('\n'));
+    await fs.writeFileSync(path.join(rootDir as string, restDataSourceOutputFiles[i]), [...imports, '', ...classSentences, ...functions, '}'].join('\n'));
     console.log(`${className} file generated!`);
   }
 }
@@ -93,6 +95,7 @@ export async function createResolvers(
   const totalLength = swaggerPaths.length;
   if (typesFiles.length !== totalLength || restDataSourceFiles.length !== totalLength || resolversOutputFiles.length !== totalLength)
     throw new Error('The numbers of files are not matched!');
+    const rootDir = await pkgDir(__dirname);
 
   for (let i = 0; i < totalLength; i++) {
     const imports = [];
@@ -101,7 +104,7 @@ export async function createResolvers(
     const resolvers = [];
     const argTypes = [];
 
-    const swaggerString = await fs.readFileSync(path.join(__dirname, swaggerPaths[i]), 'utf-8');
+    const swaggerString = await fs.readFileSync(path.join(rootDir as string, swaggerPaths[i]), 'utf-8');
     const swaggerJSON = JSON.parse(swaggerString);
 
     const className = path.basename(restDataSourceFiles[i], '.ts');
@@ -131,13 +134,13 @@ export async function createResolvers(
         if (method === 'get') {
           queries.push(indent(`
     ${operationId}: (_: any, args: ${args.length ? getArgsStringFromOperationId(operationId, method) : 'any'}, { dataSources }: any) => {
-      return dataSources.${className}.${operationId}(${args.length ? 'args' : ''});
+      return dataSources.${getInstanceNameFromClass(className)}.${operationId}(${args.length ? 'args' : ''});
     },
           `.trim(), 2));
         } else {
           mutations.push(indent(`
     ${operationId}: (_: any, args: ${args.length ? getArgsStringFromOperationId(operationId, method) : 'any'}, { dataSources }: any) => {
-      return dataSources.${className}.${operationId}(${args.length ? 'args' : ''});
+      return dataSources.${getInstanceNameFromClass(className)}.${operationId}(${args.length ? 'args' : ''});
     },
           `.trim(), 2));
         }
@@ -163,7 +166,7 @@ import {
 } from '${getRelativePath(resolversOutputFiles[i], typesFiles[i])}';
     `.trim()
     );
-    await fs.writeFileSync(path.join(__dirname, resolversOutputFiles[i]), [...imports, '', resolvers].join('\n'));
+    await fs.writeFileSync(path.join(rootDir as string, resolversOutputFiles[i]), [...imports, '', resolvers].join('\n'));
     console.log(`${className} resolvers file generated!`);
   }
 }

@@ -1,0 +1,7 @@
+{
+  "swaggerPaths": ["test/swagger.json", "test/petstore.json"],
+  "schemaOutputFiles": ["generated/heroes.graphql", "generated/petstore.graphql"],
+  "typesOutputFiles": ["generated/HeroesTypes.ts", "generated/PetstoreTypes.ts"],
+  "restDataSourceOutputFiles": ["generated/HeroesApi.ts", "generated/PetstoreApi.ts"],
+  "resolversOutputFiles": ["generated/HeroesResolvers.ts", "generated/PetstoreResolvers.ts"]
+}

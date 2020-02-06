@@ -22,9 +22,14 @@ export function indent(str: string, count = 1): string {
 }
 
 // "../generated/HeroesApi.ts" 파일에서 "../generated/types1.ts" 파일의 상대경로는 "./types1"
-export function getRelativePath(from: string, to: string, ext: string = '.ts') {
+export function getRelativePath(from: string, to: string, ext: string = '.ts'): string {
   const targetFileName = path.basename(to, ext);
   let relativePath = path.relative(path.dirname(from), path.dirname(to));
   if (relativePath === '') relativePath = './';
   return relativePath + targetFileName;
+}
+
+export function getInstanceNameFromClass(className: string): string {
+  if (!className) throw new Error('[getInstanceNameFromClass] className can not be empty string or undefined!');
+  return className[0].toLowerCase() + className.substring(1);
 }
