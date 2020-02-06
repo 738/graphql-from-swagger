@@ -1,5 +1,5 @@
 {
-  "name": "apollo-datasource-swagger",
+  "name": "graphql-from-swagger",
   "version": "0.0.1",
   "repository": {
     "type": "git",
