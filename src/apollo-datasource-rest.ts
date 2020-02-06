@@ -1,7 +1,8 @@
 import path from 'path';
 import fs from 'fs';
-import { getArgsStringFromOperationId, indent, getRelativePath, getInstanceNameFromClass } from './utils';
+import { getArgsStringFromOperationId, indent, getRelativePath, getInstanceNameFromClass, checkUrlForm } from './utils';
 import pkgDir from 'pkg-dir';
+import fetch from 'node-fetch';
 
 export async function createRESTDataSource(
   swaggerPaths: Array<string>,
@@ -17,7 +18,12 @@ export async function createRESTDataSource(
     imports.push(`import { RESTDataSource } from 'apollo-datasource-rest';`);
     imports.push(`import { URLSearchParams } from 'url';`);
 
-    const swaggerString = await fs.readFileSync(path.join(rootDir as string, swaggerPaths[i]), 'utf-8');
+    let swaggerString: string;
+    if (checkUrlForm(swaggerPaths[i])) {
+      swaggerString = await (await fetch(swaggerPaths[i])).text();
+    } else {
+      swaggerString = await fs.readFileSync(path.join(rootDir as string, swaggerPaths[i]), 'utf-8');
+    }
     const swaggerJSON = JSON.parse(swaggerString);
 
     const className = path.basename(restDataSourceOutputFiles[i], '.ts');
@@ -104,7 +110,12 @@ export async function createResolvers(
     const resolvers = [];
     const argTypes = [];
 
-    const swaggerString = await fs.readFileSync(path.join(rootDir as string, swaggerPaths[i]), 'utf-8');
+    let swaggerString: string;
+    if (checkUrlForm(swaggerPaths[i])) {
+      swaggerString = await (await fetch(swaggerPaths[i])).text();
+    } else {
+      swaggerString = await fs.readFileSync(path.join(rootDir as string, swaggerPaths[i]), 'utf-8');
+    }
     const swaggerJSON = JSON.parse(swaggerString);
 
     const className = path.basename(restDataSourceFiles[i], '.ts');

@@ -1,5 +1,5 @@
 {
-  "swaggerPaths": ["test/swagger.json", "test/petstore.json"],
+  "swaggerPaths": ["test/swagger.json", "https://petstore.swagger.io/v2/swagger.json"],
   "schemaOutputFiles": ["generated/heroes.graphql", "generated/petstore.graphql"],
   "typesOutputFiles": ["generated/HeroesTypes.ts", "generated/PetstoreTypes.ts"],
   "restDataSourceOutputFiles": ["generated/HeroesApi.ts", "generated/PetstoreApi.ts"],

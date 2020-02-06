@@ -33,3 +33,8 @@ export function getInstanceNameFromClass(className: string): string {
   if (!className) throw new Error('[getInstanceNameFromClass] className can not be empty string or undefined!');
   return className[0].toLowerCase() + className.substring(1);
 }
+
+export function checkUrlForm(strUrl: string): boolean {
+  var expUrl = /^http[s]?\:\/\//i;
+  return expUrl.test(strUrl);
+}

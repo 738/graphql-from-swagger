@@ -3,6 +3,7 @@ import createSchema, { CallBackendArguments } from 'swagger-to-graphql';
 import fs from 'fs';
 import path from 'path';
 import pkgDir from 'pkg-dir';
+import { checkUrlForm } from './utils';
 
 async function callBackend({ context, requestOptions }: CallBackendArguments<Request>) {
   return 'Not implemented';
@@ -15,7 +16,7 @@ export async function createSchemaFromSwagger(swaggerPaths: Array<string>, schem
   const schemas: Array<GraphQLSchema> = [];
   for (let i = 0; i < swaggerPaths.length; i++) {
     const schema: GraphQLSchema = await createSchema({
-      swaggerSchema: path.join(rootDir as string, swaggerPaths[i]),
+      swaggerSchema: checkUrlForm(swaggerPaths[i]) ? swaggerPaths[i] : path.join(rootDir as string, swaggerPaths[i]),
       callBackend
     });
     await fs.writeFileSync(path.join(rootDir as string, schemaOutputFiles[i]), printSchema(schema));
