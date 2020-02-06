@@ -1,6 +1,6 @@
 {
   "name": "graphql-from-swagger",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "repository": {
     "type": "git",
     "url": "git@github.com:738/graphql-from-swagger.git"
@@ -20,11 +20,9 @@
   "dependencies": {
     "@graphql-codegen/core": "^1.12.1",
     "@graphql-codegen/typescript": "^1.12.1",
-    "apollo-datasource-rest": "^0.6.11",
     "commander": "^4.1.1",
     "graphql": "^14.6.0",
     "node-fetch": "^2.6.0",
-    "pkg-dir": "^4.2.0",
     "swagger-to-graphql": "^4.0.2"
   },
   "scripts": {

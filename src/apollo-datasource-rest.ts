@@ -1,7 +1,6 @@
 import path from 'path';
 import fs from 'fs';
 import { getArgsStringFromOperationId, indent, getRelativePath, getInstanceNameFromClass, checkUrlForm } from './utils';
-import pkgDir from 'pkg-dir';
 import fetch from 'node-fetch';
 
 export async function createRESTDataSource(
@@ -11,7 +10,7 @@ export async function createRESTDataSource(
 ): Promise<void> {
   const totalLength = swaggerPaths.length;
   if (typesFiles.length !== totalLength || restDataSourceOutputFiles.length !== totalLength) throw new Error('The numbers of files are not matched!');
-  const rootDir = await pkgDir(__dirname);
+  const currentDir = process.cwd();
 
   for (let i = 0; i < totalLength; i++) {
     const imports = [];
@@ -22,7 +21,7 @@ export async function createRESTDataSource(
     if (checkUrlForm(swaggerPaths[i])) {
       swaggerString = await (await fetch(swaggerPaths[i])).text();
     } else {
-      swaggerString = await fs.readFileSync(path.join(rootDir as string, swaggerPaths[i]), 'utf-8');
+      swaggerString = await fs.readFileSync(path.join(currentDir, swaggerPaths[i]), 'utf-8');
     }
     const swaggerJSON = JSON.parse(swaggerString);
 
@@ -87,8 +86,8 @@ import {
     `.trim()
     );
 
-    await fs.writeFileSync(path.join(rootDir as string, restDataSourceOutputFiles[i]), [...imports, '', ...classSentences, ...functions, '}'].join('\n'));
-    console.log(`RESTDataSource: ${className} file (${path.join(rootDir as string, restDataSourceOutputFiles[i])}) generated!`);
+    await fs.writeFileSync(path.join(currentDir, restDataSourceOutputFiles[i]), [...imports, '', ...classSentences, ...functions, '}'].join('\n'));
+    console.log(`RESTDataSource: ${className} file (${path.join(currentDir, restDataSourceOutputFiles[i])}) generated!`);
   }
 }
 
@@ -101,7 +100,7 @@ export async function createResolvers(
   const totalLength = swaggerPaths.length;
   if (typesFiles.length !== totalLength || restDataSourceFiles.length !== totalLength || resolversOutputFiles.length !== totalLength)
     throw new Error('The numbers of files are not matched!');
-    const rootDir = await pkgDir(__dirname);
+    const currentDir = process.cwd();
 
   for (let i = 0; i < totalLength; i++) {
     const imports = [];
@@ -114,7 +113,7 @@ export async function createResolvers(
     if (checkUrlForm(swaggerPaths[i])) {
       swaggerString = await (await fetch(swaggerPaths[i])).text();
     } else {
-      swaggerString = await fs.readFileSync(path.join(rootDir as string, swaggerPaths[i]), 'utf-8');
+      swaggerString = await fs.readFileSync(path.join(currentDir, swaggerPaths[i]), 'utf-8');
     }
     const swaggerJSON = JSON.parse(swaggerString);
 
@@ -177,7 +176,7 @@ import {
 } from '${getRelativePath(resolversOutputFiles[i], typesFiles[i])}';
     `.trim()
     );
-    await fs.writeFileSync(path.join(rootDir as string, resolversOutputFiles[i]), [...imports, '', resolvers].join('\n'));
-    console.log(`Resolvers: ${className} file (${path.join(rootDir as string, resolversOutputFiles[i])}) generated!`);
+    await fs.writeFileSync(path.join(currentDir, resolversOutputFiles[i]), [...imports, '', resolvers].join('\n'));
+    console.log(`Resolvers: ${className} file (${path.join(currentDir, resolversOutputFiles[i])}) generated!`);
   }
 }
