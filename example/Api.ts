@@ -44,20 +44,20 @@ export class Api extends RESTDataSource {
   }
 
   async addPet({ body }: MutationAddPetArgs) {
-    return this.post(`/pet`, { body });
+    return this.post(`/pet`, { body } as { [key: string]: any });
   }
 
   async updatePet({ body }: MutationUpdatePetArgs) {
-    return this.put(`/pet`, { body });
+    return this.put(`/pet`, { body } as { [key: string]: any });
   }
 
   async findPetsByStatus({ status }: QueryFindPetsByStatusArgs) {
-    const queries = { status };
+    const queries: { [key: string]: any } = { status };
     return this.get(`/pet/findByStatus?${new URLSearchParams(queries)}`);
   }
 
   async findPetsByTags({ tags }: QueryFindPetsByTagsArgs) {
-    const queries = { tags };
+    const queries: { [key: string]: any } = { tags };
     return this.get(`/pet/findByTags?${new URLSearchParams(queries)}`);
   }
 
@@ -74,7 +74,7 @@ export class Api extends RESTDataSource {
   }
 
   async placeOrder({ body }: MutationPlaceOrderArgs) {
-    return this.post(`/store/order`, { body });
+    return this.post(`/store/order`, { body } as { [key: string]: any });
   }
 
   async getUserByName({ username }: QueryGetUserByNameArgs) {
@@ -82,7 +82,7 @@ export class Api extends RESTDataSource {
   }
 
   async updateUser({ username, body }: MutationUpdateUserArgs) {
-    return this.put(`/user/${username}`, { body });
+    return this.put(`/user/${username}`, { body } as { [key: string]: any });
   }
 
   async deleteUser({ username }: MutationDeleteUserArgs) {
@@ -90,7 +90,7 @@ export class Api extends RESTDataSource {
   }
 
   async loginUser({ username, password }: QueryLoginUserArgs) {
-    const queries = { username, password };
+    const queries: { [key: string]: any } = { username, password };
     return this.get(`/user/login?${new URLSearchParams(queries)}`);
   }
 
@@ -99,14 +99,14 @@ export class Api extends RESTDataSource {
   }
 
   async createUser({ body }: MutationCreateUserArgs) {
-    return this.post(`/user`, { body });
+    return this.post(`/user`, { body } as { [key: string]: any });
   }
 
   async createUsersWithArrayInput({ body }: MutationCreateUsersWithArrayInputArgs) {
-    return this.post(`/user/createWithArray`, { body });
+    return this.post(`/user/createWithArray`, { body } as { [key: string]: any });
   }
 
   async createUsersWithListInput({ body }: MutationCreateUsersWithListInputArgs) {
-    return this.post(`/user/createWithList`, { body });
+    return this.post(`/user/createWithList`, { body } as { [key: string]: any });
   }
 }
