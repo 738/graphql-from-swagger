@@ -87,7 +87,7 @@ import {
     );
 
     await fs.writeFileSync(path.join(currentDir, restDataSourceOutputFiles[i]), [...imports, '', ...classSentences, ...functions, '}'].join('\n'));
-    console.log(`RESTDataSource: ${className} file (${path.join(currentDir, restDataSourceOutputFiles[i])}) generated!`);
+    console.log(`RESTDataSource ${className} file (${path.join(currentDir, restDataSourceOutputFiles[i])}) generated!`);
   }
 }
 
@@ -177,6 +177,6 @@ import {
     `.trim()
     );
     await fs.writeFileSync(path.join(currentDir, resolversOutputFiles[i]), [...imports, '', resolvers].join('\n'));
-    console.log(`Resolvers: ${className} file (${path.join(currentDir, resolversOutputFiles[i])}) generated!`);
+    console.log(`Resolvers file (${path.join(currentDir, resolversOutputFiles[i])}) generated!`);
   }
 }
