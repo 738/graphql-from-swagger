@@ -7,7 +7,7 @@ export async function cli() {
   const { swaggerPaths, schemaOutputFiles, typesOutputFiles, restDataSourceOutputFiles, resolversOutputFiles } = await getConfigFromFile();
 
   const schemas = await createSchemaFromSwagger(swaggerPaths, schemaOutputFiles);
-  await createTypesFromSchema(schemas, typesOutputFiles);
-  await createRESTDataSource(swaggerPaths, typesOutputFiles, restDataSourceOutputFiles);
-  await createResolvers(swaggerPaths, typesOutputFiles, restDataSourceOutputFiles, resolversOutputFiles);
+  createTypesFromSchema(schemas, typesOutputFiles);
+  createRESTDataSource(swaggerPaths, typesOutputFiles, restDataSourceOutputFiles);
+  createResolvers(swaggerPaths, typesOutputFiles, restDataSourceOutputFiles, resolversOutputFiles);
 }
