@@ -1,8 +1,8 @@
 import path from 'path';
 
-// deleteCustomerUsingDELETE -> MutationDeleteCustomerUsingDelete
+// deleteCustomerUsingDELETE -> MutationDeleteCustomerUsingDeleteArgs
 export function getArgsStringFromOperationId(operationId: string, method: string): string {
-  const prefix = method === 'get' ? 'Query' : 'Mutation';
+  const prefix = method.toLowerCase() === 'get' ? 'Query' : 'Mutation';
   let prevChar: string = '';
   return (
     prefix +

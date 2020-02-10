@@ -1,5 +1,7 @@
 # graphql-from-swagger
 
+<a href="http://badge.fury.io/js/graphql-from-swagger"><img src="https://badge.fury.io/js/graphql-from-swagger.svg"></a>
+
 > 🍇 Swagger 하나로 GraphQL 관련 코드를 생성해주는 CLI입니다.
 
 ![demo](./example/demo.gif)
