@@ -1,0 +1,150 @@
+type ApiResponse {
+  code: Int
+  type: String
+  message: String
+}
+
+type Category {
+  id: String
+  name: String
+}
+
+input CategoryInput {
+  id: String
+  name: String
+}
+
+scalar JSON
+
+type Mutation {
+  updatePetWithForm(petId: String!, name: String, status: String): JSON!
+  deletePet(api_key: String, petId: String!): JSON!
+  uploadFile(petId: String!, additionalMetadata: String, file: param_uploadFile_fileInput): ApiResponse!
+  addPet(body: PetInput!): JSON!
+  updatePet(body: PetInput!): JSON!
+
+  """
+  For valid response try integer IDs with positive integer value. Negative or non-integer values will generate API errors
+  """
+  deleteOrder(orderId: String!): JSON!
+  placeOrder(body: OrderInput!): Order!
+
+  """This can only be done by the logged in user."""
+  updateUser(username: String!, body: UserInput!): JSON!
+
+  """This can only be done by the logged in user."""
+  deleteUser(username: String!): JSON!
+
+  """This can only be done by the logged in user."""
+  createUser(body: UserInput!): JSON!
+  createUsersWithArrayInput(body: [UserInput!]!): JSON!
+  createUsersWithListInput(body: [UserInput!]!): JSON!
+}
+
+type Order {
+  id: String
+  petId: String
+  quantity: Int
+  shipDate: String
+
+  """Order Status"""
+  status: String
+  complete: Boolean
+}
+
+input OrderInput {
+  id: String
+  petId: String
+  quantity: Int
+  shipDate: String
+
+  """Order Status"""
+  status: String
+  complete: Boolean
+}
+
+input param_uploadFile_fileInput {
+  unsupported: String
+}
+
+type Pet {
+  id: String
+  category: Category
+  name: String!
+  photoUrls: [String!]!
+  tags: [Pet_tags_items!]
+
+  """pet status in the store"""
+  status: String
+}
+
+type Pet_tags_items {
+  id: String
+  name: String
+}
+
+input PetInput {
+  id: String
+  category: CategoryInput
+  name: String!
+  photoUrls: [String!]!
+  tags: [PetInput_tagsInput_itemsInput!]
+
+  """pet status in the store"""
+  status: String
+}
+
+input PetInput_tagsInput_itemsInput {
+  id: String
+  name: String
+}
+
+type Query {
+  """Returns a single pet"""
+  getPetById(petId: String!): Pet!
+
+  """Multiple status values can be provided with comma separated strings"""
+  findPetsByStatus(status: [String!]!): [Pet!]!
+
+  """
+  Multiple tags can be provided with comma separated strings. Use tag1, tag2, tag3 for testing.
+  """
+  findPetsByTags(tags: [String!]!): [Pet!]!
+
+  """Returns a map of status codes to quantities"""
+  getInventory: JSON!
+
+  """
+  For valid response try integer IDs with value >= 1 and <= 10. Other values will generated exceptions
+  """
+  getOrderById(orderId: String!): Order!
+  getUserByName(username: String!): User!
+  loginUser(username: String!, password: String!): String!
+  logoutUser: JSON!
+}
+
+type User {
+  id: String
+  username: String
+  firstName: String
+  lastName: String
+  email: String
+  password: String
+  phone: String
+
+  """User Status"""
+  userStatus: Int
+}
+
+input UserInput {
+  id: String
+  username: String
+  firstName: String
+  lastName: String
+  email: String
+  password: String
+  phone: String
+
+  """User Status"""
+  userStatus: Int
+}

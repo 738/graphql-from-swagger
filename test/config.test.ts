@@ -2,7 +2,7 @@ import { instanceOfConfig, validateConfig, getConfigFromFile } from '../src/conf
 
 describe('config.ts', () => {
   const GOOD_CONFIG_1 = JSON.parse(`{
-    "swaggerPaths": ["https://petstore.swagger.io/v2/swagger.json"],
+    "swaggerPaths": ["example/swagger.json"],
     "schemaOutputFiles": ["example/schema.graphql"],
     "typesOutputFiles": ["example/types.ts"],
     "restDataSourceOutputFiles": ["example/Api.ts"],
@@ -10,7 +10,7 @@ describe('config.ts', () => {
   }`);
 
   const GOOD_CONFIG_2 = JSON.parse(`{
-    "swaggerPaths": ["https://petstore.swagger.io/v2/swagger.json", "a.json"],
+    "swaggerPaths": ["example/swagger.json", "a.json"],
     "schemaOutputFiles": ["example/schema.graphql", "b.graphql"],
     "typesOutputFiles": ["example/types.ts", "c.ts"],
     "restDataSourceOutputFiles": ["example/Api.ts", "d.ts"],
@@ -18,7 +18,7 @@ describe('config.ts', () => {
   }`);
 
   const BAD_CONFIG_1 = JSON.parse(`{
-    "swaggerPath": ["https://petstore.swagger.io/v2/swagger.json"],
+    "swaggerPath": ["example/swagger.json"],
     "schemaOutputFiles": ["example/schema.graphql"],
     "typesOutputFiles": ["example/types.ts"],
     "restDataSourceOutputFiles": ["example/Api.ts"],
@@ -26,7 +26,7 @@ describe('config.ts', () => {
   }`);
 
   const BAD_CONFIG_2 = JSON.parse(`{
-    "swaggerPaths": ["https://petstore.swagger.io/v2/swagger.json"],
+    "swaggerPaths": ["example/swagger.json"],
     "schemaOutputFil": ["example/schema.graphql"],
     "typesOutputFil": ["example/types.ts"],
     "restDataSourceOutputFiles": ["example/Api.ts"],
@@ -34,7 +34,7 @@ describe('config.ts', () => {
   }`);
 
   const BAD_CONFIG_3 = JSON.parse(`{
-    "swaggerPaths": ["https://petstore.swagger.io/v2/swagger.json", "a.json"],
+    "swaggerPaths": ["example/swagger.json", "a.json"],
     "schemaOutputFiles": ["example/schema.graphql", "a.graphql"],
     "typesOutputFiles": ["example/types.ts"],
     "restDataSourceOutputFiles": ["example/Api.ts"],
