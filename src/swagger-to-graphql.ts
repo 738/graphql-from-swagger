@@ -8,19 +8,17 @@ async function callBackend({ context, requestOptions }: CallBackendArguments<Req
   return 'Not implemented';
 }
 
-export async function createSchemaFromSwagger(swaggerPaths: Array<string>, schemaOutputFiles: Array<string>): Promise<Array<GraphQLSchema>> {
+export async function createSchemaFromSwagger(swaggerPaths: Array<string>, schemaOutputFiles: Array<string>): Promise<Array<string>> {
   if (swaggerPaths.length !== schemaOutputFiles.length) throw new Error('The numbers of swaggerPaths and schemaOutputFiles are not matched!');
   const currentDir = process.cwd();
 
-  const schemas: Array<GraphQLSchema> = [];
+  const schemas: Array<string> = [];
   for (let i = 0; i < swaggerPaths.length; i++) {
     const schema: GraphQLSchema = await createSchema({
       swaggerSchema: checkUrlForm(swaggerPaths[i]) ? swaggerPaths[i] : path.join(currentDir, swaggerPaths[i]),
       callBackend
     });
-    await fs.writeFileSync(path.join(currentDir, schemaOutputFiles[i]), printSchema(schema));
-    console.log(`GraphQL Schema file (${path.join(currentDir, schemaOutputFiles[i])}) was generated!`);
-    schemas.push(schema);
+    schemas.push(printSchema(schema));
   }
 
   return schemas;

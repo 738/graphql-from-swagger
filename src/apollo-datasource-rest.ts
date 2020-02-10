@@ -1,16 +1,16 @@
+import fetch from 'node-fetch';
 import path from 'path';
 import fs from 'fs';
 import { getArgsStringFromOperationId, indent, getRelativePath, getInstanceNameFromClass, checkUrlForm } from './utils';
-import fetch from 'node-fetch';
 
 export async function createRESTDataSource(
   swaggerPaths: Array<string>,
   typesFiles: Array<string>,
   restDataSourceOutputFiles: Array<string>
-): Promise<void> {
+): Promise<Array<string>> {
   const totalLength = swaggerPaths.length;
-  if (typesFiles.length !== totalLength || restDataSourceOutputFiles.length !== totalLength) throw new Error('The numbers of files are not matched!');
   const currentDir = process.cwd();
+  const result: Array<string> = [];
 
   for (let i = 0; i < totalLength; i++) {
     const imports = [];
@@ -86,9 +86,9 @@ import {
     `.trim()
     );
 
-    await fs.writeFileSync(path.join(currentDir, restDataSourceOutputFiles[i]), [...imports, '', ...classSentences, ...functions, '}'].join('\n'));
-    console.log(`RESTDataSource ${className} file (${path.join(currentDir, restDataSourceOutputFiles[i])}) generated!`);
+    result.push([...imports, '', ...classSentences, ...functions, '}'].join('\n'));
   }
+  return result;
 }
 
 export async function createResolvers(
@@ -96,11 +96,11 @@ export async function createResolvers(
   typesFiles: Array<string>,
   restDataSourceFiles: Array<string>,
   resolversOutputFiles: Array<string>
-): Promise<void> {
+): Promise<Array<string>> {
   const totalLength = swaggerPaths.length;
-  if (typesFiles.length !== totalLength || restDataSourceFiles.length !== totalLength || resolversOutputFiles.length !== totalLength)
-    throw new Error('The numbers of files are not matched!');
-    const currentDir = process.cwd();
+  
+  const currentDir = process.cwd();
+  const result: Array<string> = [];
 
   for (let i = 0; i < totalLength; i++) {
     const imports = [];
@@ -176,7 +176,8 @@ import {
 } from '${getRelativePath(resolversOutputFiles[i], typesFiles[i])}';
     `.trim()
     );
-    await fs.writeFileSync(path.join(currentDir, resolversOutputFiles[i]), [...imports, '', resolvers].join('\n'));
-    console.log(`Resolvers file (${path.join(currentDir, resolversOutputFiles[i])}) generated!`);
+
+    result.push([...imports, '', resolvers].join('\n'));
   }
+  return result;
 }

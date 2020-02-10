@@ -1,4 +1,5 @@
 import path from 'path';
+import fs from 'fs';
 
 // deleteCustomerUsingDELETE -> MutationDeleteCustomerUsingDeleteArgs
 export function getArgsStringFromOperationId(operationId: string, method: string): string {
@@ -38,4 +39,13 @@ export function getInstanceNameFromClass(className: string): string {
 export function checkUrlForm(strUrl: string): boolean {
   var expUrl = /^http[s]?\:\/\//i;
   return expUrl.test(strUrl);
+}
+
+export function writeFiles(paths: string[], strs: string[]) {
+  const currentDir = process.cwd();
+  for (let i=0; i<paths.length; i++) {
+    fs.writeFile(path.join(currentDir, paths[i]), strs[i], () => {
+      console.info(`[${path.join(currentDir, paths[i])}] was generated!`);
+    });
+  }
 }
