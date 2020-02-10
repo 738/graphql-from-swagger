@@ -43,6 +43,11 @@ describe('utils.ts', () => {
       expect(getInstanceNameFromClass('AbcApi')).toBe('abcApi');
       expect(getInstanceNameFromClass('Car')).toBe('car');
       expect(getInstanceNameFromClass('Asdf')).toBe('asdf');
+      try {
+        getInstanceNameFromClass('');
+      } catch (e) {
+        expect(e).toBeInstanceOf(Error);
+      }
     });
 
     test('checkUrlForm', () => {

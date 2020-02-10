@@ -1,0 +1,7 @@
+{
+  "swaggerPaths": ["https://petstore.swagger.io/v2/swagger.json", "a.json"],
+  "schemaOutputFiles": ["example/schema.graphql", "b.graphql"],
+  "typesOutputFiles": ["example/types.ts", "c.ts"],
+  "restDataSourceOutputFiles": ["example/Api.ts", "d.ts"],
+  "resolversOutputFiles": ["example/resolvers.ts", "e.ts"]
+}

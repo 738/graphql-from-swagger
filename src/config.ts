@@ -1,9 +1,9 @@
 import fs from 'fs';
 import path from 'path';
 
-const CONFIG_FILE_NAME = 'graphql-from-swagger.config.json';
+const DEFAULT_CONFIG_FILE_NAME = 'graphql-from-swagger.config.json';
 
-interface Config {
+export interface Config {
   swaggerPaths: Array<string>;
   schemaOutputFiles: Array<string>;
   typesOutputFiles: Array<string>;
@@ -12,19 +12,15 @@ interface Config {
   [key: string]: string | Array<string>;
 }
 
-export async function getConfigFromFile() {
+export async function getConfigFromFile(configName = DEFAULT_CONFIG_FILE_NAME): Promise<Config> {
   const currentDir = process.cwd();
-  const data = await fs.readFileSync(path.join(currentDir, CONFIG_FILE_NAME), 'utf-8');
-  try {
-    const configJSON: Config = JSON.parse(data);
-    validateConfig(configJSON);
-    return configJSON;
-  } catch (err) {
-    throw err;
-  }
+  const data = await fs.readFileSync(path.join(currentDir, configName), 'utf-8');
+  const configJSON: Config = JSON.parse(data);
+  validateConfig(configJSON);
+  return configJSON;
 }
 
-function validateConfig(config: Config) {
+export function validateConfig(config: Config) {
   if (config.swaggerPaths === undefined) throw new Error('swaggerPaths does not exist in config!');
   const totalLength = config.swaggerPaths.length;
 
@@ -38,7 +34,7 @@ function validateConfig(config: Config) {
   return;
 }
 
-function instanceOfConfig(config: Config): config is Config {
+export function instanceOfConfig(config: any): config is Config {
   return config.swaggerPaths !== undefined
       && config.schemaOutputFiles !== undefined
       && config.typesOutputFiles !== undefined
