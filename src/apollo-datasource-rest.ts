@@ -108,6 +108,7 @@ export async function createResolvers(
     const mutations = [];
     const resolvers = [];
     const argTypes = [];
+    const typeDefs = [];
 
     let swaggerString: string;
     if (checkUrlForm(swaggerPaths[i])) {
@@ -143,13 +144,13 @@ export async function createResolvers(
 
         if (method === 'get') {
           queries.push(indent(`
-    ${operationId}: (_: any, args: ${args.length ? getArgsStringFromOperationId(operationId, method) : 'any'}, { dataSources }: any) => {
+    ${operationId}: (parent: Query, args: ${args.length ? getArgsStringFromOperationId(operationId, method) : 'null'}, { dataSources }: Context) => {
       return dataSources.${getInstanceNameFromClass(className)}.${operationId}(${args.length ? 'args' : ''});
     },
           `.trim(), 2));
         } else {
           mutations.push(indent(`
-    ${operationId}: (_: any, args: ${args.length ? getArgsStringFromOperationId(operationId, method) : 'any'}, { dataSources }: any) => {
+    ${operationId}: (parent: Mutation, args: ${args.length ? getArgsStringFromOperationId(operationId, method) : 'null'}, { dataSources }: Context) => {
       return dataSources.${getInstanceNameFromClass(className)}.${operationId}(${args.length ? 'args' : ''});
     },
           `.trim(), 2));
@@ -172,12 +173,34 @@ ${mutations.join('\n')}
     imports.push(
       `
 import {
-  ${argTypes.join(',\n  ')}
+  ${['Query', 'Mutation', ...argTypes].join(',\n  ')}
 } from '${getRelativePath(resolversOutputFiles[i], typesFiles[i])}';
     `.trim()
     );
 
-    result.push([...imports, '', resolvers].join('\n'));
+    imports.push(
+      `
+import { ${className} } from '${getRelativePath(resolversOutputFiles[i], restDataSourceFiles[i])}';
+    `.trim()
+    );
+
+    typeDefs.push(
+      `
+type DataSources = {
+  ${getInstanceNameFromClass(className)}: ${className};
+};
+      `.trim()
+    );
+
+    typeDefs.push(
+      `
+type Context = {
+  dataSources: DataSources;
+};
+      `.trim()
+    );
+
+    result.push([...imports, '', ...typeDefs, '', resolvers].join('\n'));
   }
   return result;
 }

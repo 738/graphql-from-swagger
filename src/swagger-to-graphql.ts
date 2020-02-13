@@ -1,6 +1,5 @@
 import { GraphQLSchema, printSchema } from 'graphql';
 import createSchema, { CallBackendArguments } from 'swagger-to-graphql';
-import fs from 'fs';
 import path from 'path';
 import { checkUrlForm } from './utils';
 

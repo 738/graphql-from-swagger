@@ -1,4 +1,6 @@
 import {
+  Query,
+  Mutation,
   QueryGetPetByIdArgs,
   MutationUpdatePetWithFormArgs,
   MutationDeletePetArgs,
@@ -18,69 +20,77 @@ import {
   MutationCreateUsersWithArrayInputArgs,
   MutationCreateUsersWithListInputArgs
 } from './types';
+import { Api } from './Api';
+
+type DataSources = {
+  api: Api;
+};
+type Context = {
+  dataSources: DataSources;
+};
 
 export const resolvers = {
   Query: {
-    getPetById: (_: any, args: QueryGetPetByIdArgs, { dataSources }: any) => {
+    getPetById: (parent: Query, args: QueryGetPetByIdArgs, { dataSources }: Context) => {
       return dataSources.api.getPetById(args);
     },
-    findPetsByStatus: (_: any, args: QueryFindPetsByStatusArgs, { dataSources }: any) => {
+    findPetsByStatus: (parent: Query, args: QueryFindPetsByStatusArgs, { dataSources }: Context) => {
       return dataSources.api.findPetsByStatus(args);
     },
-    findPetsByTags: (_: any, args: QueryFindPetsByTagsArgs, { dataSources }: any) => {
+    findPetsByTags: (parent: Query, args: QueryFindPetsByTagsArgs, { dataSources }: Context) => {
       return dataSources.api.findPetsByTags(args);
     },
-    getInventory: (_: any, args: any, { dataSources }: any) => {
+    getInventory: (parent: Query, args: null, { dataSources }: Context) => {
       return dataSources.api.getInventory();
     },
-    getOrderById: (_: any, args: QueryGetOrderByIdArgs, { dataSources }: any) => {
+    getOrderById: (parent: Query, args: QueryGetOrderByIdArgs, { dataSources }: Context) => {
       return dataSources.api.getOrderById(args);
     },
-    getUserByName: (_: any, args: QueryGetUserByNameArgs, { dataSources }: any) => {
+    getUserByName: (parent: Query, args: QueryGetUserByNameArgs, { dataSources }: Context) => {
       return dataSources.api.getUserByName(args);
     },
-    loginUser: (_: any, args: QueryLoginUserArgs, { dataSources }: any) => {
+    loginUser: (parent: Query, args: QueryLoginUserArgs, { dataSources }: Context) => {
       return dataSources.api.loginUser(args);
     },
-    logoutUser: (_: any, args: any, { dataSources }: any) => {
+    logoutUser: (parent: Query, args: null, { dataSources }: Context) => {
       return dataSources.api.logoutUser();
     },
   },
   Mutation: {
-    updatePetWithForm: (_: any, args: MutationUpdatePetWithFormArgs, { dataSources }: any) => {
+    updatePetWithForm: (parent: Mutation, args: MutationUpdatePetWithFormArgs, { dataSources }: Context) => {
       return dataSources.api.updatePetWithForm(args);
     },
-    deletePet: (_: any, args: MutationDeletePetArgs, { dataSources }: any) => {
+    deletePet: (parent: Mutation, args: MutationDeletePetArgs, { dataSources }: Context) => {
       return dataSources.api.deletePet(args);
     },
-    uploadFile: (_: any, args: MutationUploadFileArgs, { dataSources }: any) => {
+    uploadFile: (parent: Mutation, args: MutationUploadFileArgs, { dataSources }: Context) => {
       return dataSources.api.uploadFile(args);
     },
-    addPet: (_: any, args: MutationAddPetArgs, { dataSources }: any) => {
+    addPet: (parent: Mutation, args: MutationAddPetArgs, { dataSources }: Context) => {
       return dataSources.api.addPet(args);
     },
-    updatePet: (_: any, args: MutationUpdatePetArgs, { dataSources }: any) => {
+    updatePet: (parent: Mutation, args: MutationUpdatePetArgs, { dataSources }: Context) => {
       return dataSources.api.updatePet(args);
     },
-    deleteOrder: (_: any, args: MutationDeleteOrderArgs, { dataSources }: any) => {
+    deleteOrder: (parent: Mutation, args: MutationDeleteOrderArgs, { dataSources }: Context) => {
       return dataSources.api.deleteOrder(args);
     },
-    placeOrder: (_: any, args: MutationPlaceOrderArgs, { dataSources }: any) => {
+    placeOrder: (parent: Mutation, args: MutationPlaceOrderArgs, { dataSources }: Context) => {
       return dataSources.api.placeOrder(args);
     },
-    updateUser: (_: any, args: MutationUpdateUserArgs, { dataSources }: any) => {
+    updateUser: (parent: Mutation, args: MutationUpdateUserArgs, { dataSources }: Context) => {
       return dataSources.api.updateUser(args);
     },
-    deleteUser: (_: any, args: MutationDeleteUserArgs, { dataSources }: any) => {
+    deleteUser: (parent: Mutation, args: MutationDeleteUserArgs, { dataSources }: Context) => {
       return dataSources.api.deleteUser(args);
     },
-    createUser: (_: any, args: MutationCreateUserArgs, { dataSources }: any) => {
+    createUser: (parent: Mutation, args: MutationCreateUserArgs, { dataSources }: Context) => {
       return dataSources.api.createUser(args);
     },
-    createUsersWithArrayInput: (_: any, args: MutationCreateUsersWithArrayInputArgs, { dataSources }: any) => {
+    createUsersWithArrayInput: (parent: Mutation, args: MutationCreateUsersWithArrayInputArgs, { dataSources }: Context) => {
       return dataSources.api.createUsersWithArrayInput(args);
     },
-    createUsersWithListInput: (_: any, args: MutationCreateUsersWithListInputArgs, { dataSources }: any) => {
+    createUsersWithListInput: (parent: Mutation, args: MutationCreateUsersWithListInputArgs, { dataSources }: Context) => {
       return dataSources.api.createUsersWithListInput(args);
     },
   }
