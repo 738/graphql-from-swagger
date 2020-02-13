@@ -64,7 +64,8 @@ export class ${className} extends RESTDataSource {
 
         func.push(indent(`/**`));
         if (field.deprecated) func.push(indent(` * @deprecated`));
-        func.push(indent(` * @tags ${field.tags.join(', ')}`));
+        if (field.tags && field.tags.length > 0) func.push(indent(` * @tags ${field.tags.join(', ')}`));
+        if (field.summary) func.push(indent(` * @summary ${field.summary}`));
         if (field.description) func.push(indent(` * @description ${field.description}`));
         func.push(indent(` */`));
 
