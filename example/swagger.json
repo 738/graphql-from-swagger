@@ -78,6 +78,7 @@
             "description": "Pet not found"
           }
         },
+        "deprecated": true,
         "security": [
           {
             "api_key": []

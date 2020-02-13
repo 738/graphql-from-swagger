@@ -62,6 +62,12 @@ export class ${className} extends RESTDataSource {
         const func: string[] = [];
         func.push('');
 
+        func.push(indent(`/**`));
+        if (field.deprecated) func.push(indent(` * @deprecated`));
+        func.push(indent(` * @tags ${field.tags.join(', ')}`));
+        if (field.description) func.push(indent(` * @description ${field.description}`));
+        func.push(indent(` */`));
+
         const argumentsString = args.length ? `{ ${args.join(', ')} }: ${getArgsStringFromOperationId(operationId, method)}` : '';
         if (args.length) argTypes.push(`${getArgsStringFromOperationId(operationId, method)}`);
         func.push(indent(`async ${operationId}(${argumentsString}) {`));
