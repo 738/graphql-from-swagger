@@ -73,10 +73,10 @@ export class ${className} extends RESTDataSource {
         if (args.length) argTypes.push(`${getArgsStringFromOperationId(operationId, method)}`);
         func.push(indent(`async ${operationId}(${argumentsString}) {`));
 
-        if (parameters['query']) func.push(indent(`const queries: { [key: string]: any } = { ${parameters['query'].join(', ')} };`, 2));
+        if (parameters['query']) func.push(indent(`const queries = { ${parameters['query'].join(', ')} };`, 2));
 
-        const queryString = parameters['query'] ? `?\${new URLSearchParams(queries)}` : '';
-        const bodyString = parameters['body'] ? `, { ${parameters['body'].join(', ')} } as { [key: string]: any }` : '';
+        const queryString = parameters['query'] ? `?\${new URLSearchParams(queries as { [key: string]: any })}` : '';
+        const bodyString = parameters['body'] && method !== 'get' ? `, { ${parameters['body'].join(', ')} }` : '';
 
         func.push(indent(`return this.${method}(\`${endpoint.replace('{', '${')}${queryString}\`${bodyString});`, 2));
         func.push(indent(`}`));

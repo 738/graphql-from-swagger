@@ -66,7 +66,7 @@ export class Api extends RESTDataSource {
    * @summary Add a new pet to the store
    */
   async addPet({ body }: MutationAddPetArgs) {
-    return this.post(`/pet`, { body } as { [key: string]: any });
+    return this.post(`/pet`, { body });
   }
 
   /**
@@ -74,7 +74,7 @@ export class Api extends RESTDataSource {
    * @summary Update an existing pet
    */
   async updatePet({ body }: MutationUpdatePetArgs) {
-    return this.put(`/pet`, { body } as { [key: string]: any });
+    return this.put(`/pet`, { body });
   }
 
   /**
@@ -83,8 +83,8 @@ export class Api extends RESTDataSource {
    * @description Multiple status values can be provided with comma separated strings
    */
   async findPetsByStatus({ status }: QueryFindPetsByStatusArgs) {
-    const queries: { [key: string]: any } = { status };
-    return this.get(`/pet/findByStatus?${new URLSearchParams(queries)}`);
+    const queries = { status };
+    return this.get(`/pet/findByStatus?${new URLSearchParams(queries as { [key: string]: any })}`);
   }
 
   /**
@@ -94,8 +94,8 @@ export class Api extends RESTDataSource {
    * @description Multiple tags can be provided with comma separated strings. Use tag1, tag2, tag3 for testing.
    */
   async findPetsByTags({ tags }: QueryFindPetsByTagsArgs) {
-    const queries: { [key: string]: any } = { tags };
-    return this.get(`/pet/findByTags?${new URLSearchParams(queries)}`);
+    const queries = { tags };
+    return this.get(`/pet/findByTags?${new URLSearchParams(queries as { [key: string]: any })}`);
   }
 
   /**
@@ -130,7 +130,7 @@ export class Api extends RESTDataSource {
    * @summary Place an order for a pet
    */
   async placeOrder({ body }: MutationPlaceOrderArgs) {
-    return this.post(`/store/order`, { body } as { [key: string]: any });
+    return this.post(`/store/order`, { body });
   }
 
   /**
@@ -147,7 +147,7 @@ export class Api extends RESTDataSource {
    * @description This can only be done by the logged in user.
    */
   async updateUser({ username, body }: MutationUpdateUserArgs) {
-    return this.put(`/user/${username}`, { body } as { [key: string]: any });
+    return this.put(`/user/${username}`, { body });
   }
 
   /**
@@ -164,8 +164,8 @@ export class Api extends RESTDataSource {
    * @summary Logs user into the system
    */
   async loginUser({ username, password }: QueryLoginUserArgs) {
-    const queries: { [key: string]: any } = { username, password };
-    return this.get(`/user/login?${new URLSearchParams(queries)}`);
+    const queries = { username, password };
+    return this.get(`/user/login?${new URLSearchParams(queries as { [key: string]: any })}`);
   }
 
   /**
@@ -182,7 +182,7 @@ export class Api extends RESTDataSource {
    * @description This can only be done by the logged in user.
    */
   async createUser({ body }: MutationCreateUserArgs) {
-    return this.post(`/user`, { body } as { [key: string]: any });
+    return this.post(`/user`, { body });
   }
 
   /**
@@ -190,7 +190,7 @@ export class Api extends RESTDataSource {
    * @summary Creates list of users with given input array
    */
   async createUsersWithArrayInput({ body }: MutationCreateUsersWithArrayInputArgs) {
-    return this.post(`/user/createWithArray`, { body } as { [key: string]: any });
+    return this.post(`/user/createWithArray`, { body });
   }
 
   /**
@@ -198,6 +198,6 @@ export class Api extends RESTDataSource {
    * @summary Creates list of users with given input array
    */
   async createUsersWithListInput({ body }: MutationCreateUsersWithListInputArgs) {
-    return this.post(`/user/createWithList`, { body } as { [key: string]: any });
+    return this.post(`/user/createWithList`, { body });
   }
 }
