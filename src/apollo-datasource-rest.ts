@@ -39,14 +39,14 @@ export class ${className} extends RESTDataSource {
 
     const functions: string[] = [];
     const argTypes: string[] = [];
-    for (let endpoint in swaggerJSON.paths) {
-      for (let method in swaggerJSON.paths[endpoint]) {
+    for (const endpoint in swaggerJSON.paths) {
+      for (const method in swaggerJSON.paths[endpoint]) {
         const field = swaggerJSON.paths[endpoint][method];
         const operationId = field.operationId;
         const parameters: { [key: string]: string[] } = {};
 
         if (field.parameters) {
-          for (let parameter of field.parameters) {
+          for (const parameter of field.parameters) {
             if (parameters[parameter.in] !== undefined) {
               parameters[parameter.in].push(parameter.name);
             } else {
@@ -61,13 +61,7 @@ export class ${className} extends RESTDataSource {
 
         const func: string[] = [];
         func.push('');
-
-        func.push(indent(`/**`));
-        if (field.deprecated) func.push(indent(` * @deprecated`));
-        if (field.tags && field.tags.length > 0) func.push(indent(` * @tags ${field.tags.join(', ')}`));
-        if (field.summary) func.push(indent(` * @summary ${field.summary}`));
-        if (field.description) func.push(indent(` * @description ${field.description}`));
-        func.push(indent(` */`));
+        func.push(...getCommentBlocks(field));
 
         const argumentsString = args.length ? `{ ${args.join(', ')} }: ${getArgsStringFromOperationId(operationId, method)}` : '';
         if (args.length) argTypes.push(`${getArgsStringFromOperationId(operationId, method)}`);
@@ -118,6 +112,46 @@ import {
   return result;
 }
 
+function getCommentBlocks(field: { [key: string]: any }): string[] {
+  const blocks: string[] = [];
+  blocks.push(indent(`/**`));
+  if (field.deprecated) blocks.push(indent(` * @deprecated`));
+  if (field.tags && field.tags.length > 0) blocks.push(indent(` * @tags ${field.tags.join(', ')}`));
+  if (field.summary) blocks.push(indent(` * @summary ${field.summary}`));
+  if (field.description) blocks.push(indent(` * @description ${field.description}`));
+  if (field.parameters) {
+    for (const parameter of field.parameters) {
+      let type;
+      if (parameter.type) {
+        if (parameter.type !== 'array') {
+          type = parameter.type;
+        } else {
+          type = parameter.items.type + '[]';
+        }
+      } else if (parameter.schema) {
+        if (parameter.schema.$ref) {
+          type = parameter.schema.$ref.split('#/definitions/').pop();
+        } else if (parameter.schema.items && parameter.schema.type === 'array') {
+          if (parameter.schema.items.type) {
+            type = parameter.schema.items.type + '[]';
+          } else if (parameter.schema.items.$ref) {
+            type = parameter.schema.items.$ref.split('#/definitions/').pop() + '[]';
+          }
+        }
+      }
+      blocks.push(
+        indent(
+          ` * @param${type ? ` {${type}}` : ''} ${parameter.name} ${parameter.description ? '- ' + parameter.description : ''} @${parameter.in} ${
+            parameter.required ? '@required' : ''
+          }`
+        )
+      );
+    }
+  }
+  blocks.push(indent(` */`));
+  return blocks;
+}
+
 export async function createResolvers(
   swaggerPaths: Array<string>,
   typesFiles: Array<string>,
@@ -125,7 +159,7 @@ export async function createResolvers(
   resolversOutputFiles: Array<string>
 ): Promise<Array<string>> {
   const totalLength = swaggerPaths.length;
-  
+
   const currentDir = process.cwd();
   const result: Array<string> = [];
 
@@ -170,17 +204,29 @@ export async function createResolvers(
         if (args.length) argTypes.push(`${getArgsStringFromOperationId(operationId, method)}`);
 
         if (method === 'get') {
-          queries.push(indent(`
+          queries.push(
+            indent(
+              `
     ${operationId}: (parent: Query, args: ${args.length ? getArgsStringFromOperationId(operationId, method) : 'null'}, { dataSources }: Context) => {
       return dataSources.${getInstanceNameFromClass(className)}.${operationId}(${args.length ? 'args' : ''});
     },
-          `.trim(), 2));
+          `.trim(),
+              2
+            )
+          );
         } else {
-          mutations.push(indent(`
-    ${operationId}: (parent: Mutation, args: ${args.length ? getArgsStringFromOperationId(operationId, method) : 'null'}, { dataSources }: Context) => {
+          mutations.push(
+            indent(
+              `
+    ${operationId}: (parent: Mutation, args: ${
+                args.length ? getArgsStringFromOperationId(operationId, method) : 'null'
+              }, { dataSources }: Context) => {
       return dataSources.${getInstanceNameFromClass(className)}.${operationId}(${args.length ? 'args' : ''});
     },
-          `.trim(), 2));
+          `.trim(),
+              2
+            )
+          );
         }
       }
     }
