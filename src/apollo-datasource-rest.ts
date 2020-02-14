@@ -76,21 +76,29 @@ export class ${className} extends RESTDataSource {
         if (parameters['query']) func.push(indent(`const queries = { ${parameters['query'].join(', ')} };`, 2));
 
         const queryString = parameters['query'] ? `?\${new URLSearchParams(queries as { [key: string]: any })}` : '';
-        const bodyString = parameters['body'] && method !== 'get' ? `, { ${parameters['body'].join(', ')} }` : '';
+        let bodyString = parameters['body'] && method !== 'get' ? `, { ${parameters['body'].join(', ')} }` : '';
         let requestInitString = '';
-        let formDataString = '';
+        let headerStrings = [];
         const isXWwwFormUrlEncoded = field.consumes && field.consumes.includes('application/x-www-form-urlencoded');
 
         if (isXWwwFormUrlEncoded) {
-          requestInitString = `, {
-      headers: {
-        'Content-Type': 'application/x-www-form-urlencoded',
-      },
-    }`;
-          formDataString = parameters['formData'] && method !== 'get' ? `, { ${parameters['formData'].join(', ')} }` : '';
+          headerStrings.push(`'Content-Type': 'application/x-www-form-urlencoded'`);
+          bodyString = parameters['formData'] && method !== 'get' ? `, { ${parameters['formData'].join(', ')} }` : '';
         }
 
-        func.push(indent(`return this.${method}(\`${endpoint.replace('{', '${')}${queryString}\`${bodyString || formDataString}${requestInitString});`, 2));
+        if (parameters['header']) {
+          headerStrings.push(...parameters['header']);
+        }
+
+        if (headerStrings && headerStrings.length > 0) {
+          requestInitString = `, {
+      headers: {
+        ${headerStrings.join(',\n') + ','}
+      },
+    }`;
+        }
+
+        func.push(indent(`return this.${method}(\`${endpoint.replace('{', '${')}${queryString}\`${bodyString}${requestInitString});`, 2));
         func.push(indent(`}`));
 
         functions.push(func.join('\n'));

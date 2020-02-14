@@ -33,6 +33,7 @@
   },
   "scripts": {
     "dev": "ts-node src/index.ts",
+    "start": "node ./bin/graphql-from-swagger.js",
     "build": "tsc",
     "test": "jest"
   },

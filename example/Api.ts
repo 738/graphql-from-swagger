@@ -54,7 +54,11 @@ export class Api extends RESTDataSource {
    * @summary Deletes a pet
    */
   async deletePet({ api_key, petId }: MutationDeletePetArgs) {
-    return this.delete(`/pet/${petId}`);
+    return this.delete(`/pet/${petId}`, {
+      headers: {
+        api_key,
+      },
+    });
   }
 
   /**
