@@ -77,8 +77,20 @@ export class ${className} extends RESTDataSource {
 
         const queryString = parameters['query'] ? `?\${new URLSearchParams(queries as { [key: string]: any })}` : '';
         const bodyString = parameters['body'] && method !== 'get' ? `, { ${parameters['body'].join(', ')} }` : '';
+        let requestInitString = '';
+        let formDataString = '';
+        const isXWwwFormUrlEncoded = field.consumes && field.consumes.includes('application/x-www-form-urlencoded');
 
-        func.push(indent(`return this.${method}(\`${endpoint.replace('{', '${')}${queryString}\`${bodyString});`, 2));
+        if (isXWwwFormUrlEncoded) {
+          requestInitString = `, {
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+      },
+    }`;
+          formDataString = parameters['formData'] && method !== 'get' ? `, { ${parameters['formData'].join(', ')} }` : '';
+        }
+
+        func.push(indent(`return this.${method}(\`${endpoint.replace('{', '${')}${queryString}\`${bodyString || formDataString}${requestInitString});`, 2));
         func.push(indent(`}`));
 
         functions.push(func.join('\n'));

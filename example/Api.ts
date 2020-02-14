@@ -42,7 +42,11 @@ export class Api extends RESTDataSource {
    * @summary Updates a pet in the store with form data
    */
   async updatePetWithForm({ petId, name, status }: MutationUpdatePetWithFormArgs) {
-    return this.post(`/pet/${petId}`);
+    return this.post(`/pet/${petId}`, { name, status }, {
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+      },
+    });
   }
 
   /**
