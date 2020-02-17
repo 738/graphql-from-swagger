@@ -24,8 +24,8 @@
     "typescript": "^3.7.5"
   },
   "dependencies": {
-    "@graphql-codegen/core": "^1.12.1",
-    "@graphql-codegen/typescript": "^1.12.1",
+    "@graphql-codegen/core": "^1.12.2",
+    "@graphql-codegen/typescript": "^1.12.2",
     "commander": "^4.1.1",
     "graphql": "^14.6.0",
     "node-fetch": "^2.6.0",

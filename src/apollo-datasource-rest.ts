@@ -207,8 +207,8 @@ export async function createResolvers(
           queries.push(
             indent(
               `
-    ${operationId}: (parent: Query, args: ${args.length ? getArgsStringFromOperationId(operationId, method) : 'null'}, { dataSources }: Context) => {
-      return dataSources.${getInstanceNameFromClass(className)}.${operationId}(${args.length ? 'args' : ''});
+    ${operationId}: (parent: Query, args: ${args.length ? getArgsStringFromOperationId(operationId, method) : 'null'}, context: Context, info: GraphQLResolveInfo) => {
+      return context.dataSources.${getInstanceNameFromClass(className)}.${operationId}(${args.length ? 'args' : ''});
     },
           `.trim(),
               2
@@ -218,10 +218,8 @@ export async function createResolvers(
           mutations.push(
             indent(
               `
-    ${operationId}: (parent: Mutation, args: ${
-                args.length ? getArgsStringFromOperationId(operationId, method) : 'null'
-              }, { dataSources }: Context) => {
-      return dataSources.${getInstanceNameFromClass(className)}.${operationId}(${args.length ? 'args' : ''});
+    ${operationId}: (parent: Mutation, args: ${args.length ? getArgsStringFromOperationId(operationId, method) : 'null'}, context: Context, info: GraphQLResolveInfo) => {
+      return context.dataSources.${getInstanceNameFromClass(className)}.${operationId}(${args.length ? 'args' : ''});
     },
           `.trim(),
               2
@@ -242,6 +240,8 @@ ${mutations.join('\n')}
 }
     `.trim()
     );
+
+    imports.push(`import { GraphQLResolveInfo } from 'graphql';`);
 
     imports.push(
       `
