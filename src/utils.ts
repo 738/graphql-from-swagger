@@ -49,3 +49,10 @@ export function writeFiles(paths: string[], strs: string[]) {
     });
   }
 }
+
+export const replaceOddChars = (str: string): string => str.replace(/[^_a-zA-Z0-9]/g, '_');
+
+export const getGQLTypeNameFromURL = (method: string, url: string): string => {
+  const fromUrl = replaceOddChars(url.replace(/[{}]+/g, ''));
+  return `${method}${fromUrl}`;
+};

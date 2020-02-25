@@ -24,7 +24,7 @@ import {
 export class Api extends RESTDataSource {
   constructor() {
     super();
-    this.baseURL = 'http://petstore.swagger.io';
+    this.baseURL = 'http://petstore.swagger.io/v2';
   }
 
   /**

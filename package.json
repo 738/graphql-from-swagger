@@ -19,6 +19,7 @@
     "@types/jest": "^25.1.2",
     "@types/node": "^13.7.0",
     "@types/node-fetch": "^2.5.4",
+    "@types/yamljs": "^0.2.30",
     "babel-jest": "^25.1.0",
     "jest": "^25.1.0",
     "typescript": "^3.7.5"
@@ -29,7 +30,8 @@
     "commander": "^4.1.1",
     "graphql": "^14.6.0",
     "node-fetch": "^2.6.0",
-    "swagger-to-graphql": "^4.0.2"
+    "swagger-to-graphql": "^4.0.2",
+    "yamljs": "^0.3.0"
   },
   "scripts": {
     "dev": "ts-node src/index.ts",

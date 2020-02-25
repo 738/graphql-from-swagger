@@ -1,12 +1,21 @@
 import fetch from 'node-fetch';
 import path from 'path';
 import fs from 'fs';
-import { getArgsStringFromOperationId, indent, getRelativePath, getInstanceNameFromClass, checkUrlForm } from './utils';
+import YAML from 'yamljs';
+import {
+  getArgsStringFromOperationId,
+  indent,
+  getRelativePath,
+  getInstanceNameFromClass,
+  checkUrlForm,
+  replaceOddChars,
+  getGQLTypeNameFromURL,
+} from './utils';
 
 export async function createRESTDataSource(
   swaggerPaths: Array<string>,
   typesFiles: Array<string>,
-  restDataSourceOutputFiles: Array<string>
+  restDataSourceOutputFiles: Array<string>,
 ): Promise<Array<string>> {
   const totalLength = swaggerPaths.length;
   const currentDir = process.cwd();
@@ -23,26 +32,46 @@ export async function createRESTDataSource(
     } else {
       swaggerString = await fs.readFileSync(path.join(currentDir, swaggerPaths[i]), 'utf-8');
     }
-    const swaggerJSON = JSON.parse(swaggerString);
+
+    let swaggerJSON: { [key: string]: any };
+    if (swaggerPaths[i].endsWith('.json')) {
+      swaggerJSON = JSON.parse(swaggerString);
+    } else if (swaggerPaths[i].endsWith('.yaml')) {
+      swaggerJSON = YAML.parse(swaggerString);
+    } else {
+      throw new Error('Swagger is Invalid!');
+    }
 
     const className = path.basename(restDataSourceOutputFiles[i], '.ts');
     const classSentences = [];
+    let hostUrl = '';
+    if (swaggerJSON.host) {
+      hostUrl = swaggerJSON.host.startsWith('http') ? swaggerJSON.host : 'http://' + swaggerJSON.host;
+      if (swaggerJSON.basePath) {
+        hostUrl += swaggerJSON.basePath;
+      }
+    } else if (swaggerJSON.servers && swaggerJSON.servers.length > 0 && swaggerJSON.servers[0].url) {
+      hostUrl = swaggerJSON.servers[0].url.startsWith('http') ? swaggerJSON.servers[0].url : 'http://' + swaggerJSON.servers[0].url;
+    } else {
+      throw new Error('hostUrl is not exist!');
+    }
     classSentences.push(
       `
 export class ${className} extends RESTDataSource {
   constructor() {
     super();
-    this.baseURL = '${swaggerJSON.host.startsWith('http') ? swaggerJSON.host : 'http://' + swaggerJSON.host}';
+    this.baseURL = '${hostUrl}';
   }
-    `.trim()
+    `.trim(),
     );
 
     const functions: string[] = [];
     const argTypes: string[] = [];
     for (const endpoint in swaggerJSON.paths) {
       for (const method in swaggerJSON.paths[endpoint]) {
+        if (method === 'parameters') continue;
         const field = swaggerJSON.paths[endpoint][method];
-        const operationId = field.operationId;
+        const operationId = field.operationId ? replaceOddChars(field.operationId) : getGQLTypeNameFromURL(method, endpoint);
         const parameters: { [key: string]: string[] } = {};
 
         if (field.parameters) {
@@ -104,7 +133,7 @@ export class ${className} extends RESTDataSource {
 import {
   ${argTypes.join(',\n  ')}
 } from '${getRelativePath(restDataSourceOutputFiles[i], typesFiles[i])}';
-    `.trim()
+    `.trim(),
     );
 
     result.push([...imports, '', ...classSentences, ...functions, '}'].join('\n'));
@@ -141,10 +170,10 @@ function getCommentBlocks(field: { [key: string]: any }): string[] {
       }
       blocks.push(
         indent(
-          ` * @param${type ? ` {${type}}` : ''} ${parameter.name} ${parameter.description ? '- ' + parameter.description : ''} @${parameter.in} ${
-            parameter.required ? '@required' : ''
-          }`
-        )
+          ` * @param${type ? ` {${type}}` : ''} ${parameter.name} ${parameter.description ? '- ' + parameter.description : ''} @${
+            parameter.in
+          } ${parameter.required ? '@required' : ''}`,
+        ),
       );
     }
   }
@@ -156,7 +185,7 @@ export async function createResolvers(
   swaggerPaths: Array<string>,
   typesFiles: Array<string>,
   restDataSourceFiles: Array<string>,
-  resolversOutputFiles: Array<string>
+  resolversOutputFiles: Array<string>,
 ): Promise<Array<string>> {
   const totalLength = swaggerPaths.length;
 
@@ -177,18 +206,27 @@ export async function createResolvers(
     } else {
       swaggerString = await fs.readFileSync(path.join(currentDir, swaggerPaths[i]), 'utf-8');
     }
-    const swaggerJSON = JSON.parse(swaggerString);
+
+    let swaggerJSON: { [key: string]: any };
+    if (swaggerPaths[i].endsWith('.json')) {
+      swaggerJSON = JSON.parse(swaggerString);
+    } else if (swaggerPaths[i].endsWith('.yaml')) {
+      swaggerJSON = YAML.parse(swaggerString);
+    } else {
+      throw new Error('Swagger is Invalid!');
+    }
 
     const className = path.basename(restDataSourceFiles[i], '.ts');
 
-    for (let endpoint in swaggerJSON.paths) {
-      for (let method in swaggerJSON.paths[endpoint]) {
+    for (const endpoint in swaggerJSON.paths) {
+      for (const method in swaggerJSON.paths[endpoint]) {
+        if (method === 'parameters') continue;
         const field = swaggerJSON.paths[endpoint][method];
-        const operationId = field.operationId;
+        const operationId = field.operationId ? replaceOddChars(field.operationId) : getGQLTypeNameFromURL(method, endpoint);
         const parameters: { [key: string]: string[] } = {};
 
         if (field.parameters) {
-          for (let parameter of field.parameters) {
+          for (const parameter of field.parameters) {
             if (parameters[parameter.in] !== undefined) {
               parameters[parameter.in].push(parameter.name);
             } else {
@@ -207,23 +245,27 @@ export async function createResolvers(
           queries.push(
             indent(
               `
-    ${operationId}: (parent: Query, args: ${args.length ? getArgsStringFromOperationId(operationId, method) : 'null'}, context: Context, info: GraphQLResolveInfo) => {
+    ${operationId}: (parent: Query, args: ${
+                args.length ? getArgsStringFromOperationId(operationId, method) : 'null'
+              }, context: Context, info: GraphQLResolveInfo) => {
       return context.dataSources.${getInstanceNameFromClass(className)}.${operationId}(${args.length ? 'args' : ''});
     },
           `.trim(),
-              2
-            )
+              2,
+            ),
           );
         } else {
           mutations.push(
             indent(
               `
-    ${operationId}: (parent: Mutation, args: ${args.length ? getArgsStringFromOperationId(operationId, method) : 'null'}, context: Context, info: GraphQLResolveInfo) => {
+    ${operationId}: (parent: Mutation, args: ${
+                args.length ? getArgsStringFromOperationId(operationId, method) : 'null'
+              }, context: Context, info: GraphQLResolveInfo) => {
       return context.dataSources.${getInstanceNameFromClass(className)}.${operationId}(${args.length ? 'args' : ''});
     },
           `.trim(),
-              2
-            )
+              2,
+            ),
           );
         }
       }
@@ -238,7 +280,7 @@ ${queries.join('\n')}
 ${mutations.join('\n')}
   }
 }
-    `.trim()
+    `.trim(),
     );
 
     imports.push(`import { GraphQLResolveInfo } from 'graphql';`);
@@ -248,13 +290,13 @@ ${mutations.join('\n')}
 import {
   ${['Query', 'Mutation', ...argTypes].join(',\n  ')}
 } from '${getRelativePath(resolversOutputFiles[i], typesFiles[i])}';
-    `.trim()
+    `.trim(),
     );
 
     imports.push(
       `
 import { ${className} } from '${getRelativePath(resolversOutputFiles[i], restDataSourceFiles[i])}';
-    `.trim()
+    `.trim(),
     );
 
     typeDefs.push(
@@ -262,7 +304,7 @@ import { ${className} } from '${getRelativePath(resolversOutputFiles[i], restDat
 type DataSources = {
   ${getInstanceNameFromClass(className)}: ${className};
 };
-      `.trim()
+      `.trim(),
     );
 
     typeDefs.push(
@@ -270,7 +312,7 @@ type DataSources = {
 type Context = {
   dataSources: DataSources;
 };
-      `.trim()
+      `.trim(),
     );
 
     result.push([...imports, '', ...typeDefs, '', resolvers].join('\n'));
