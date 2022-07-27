@@ -44,8 +44,13 @@ export function checkUrlForm(strUrl: string): boolean {
 export function writeFiles(paths: string[], strs: string[]) {
   const currentDir = process.cwd();
   for (let i=0; i<paths.length; i++) {
-    fs.writeFile(path.join(currentDir, paths[i]), strs[i], () => {
-      console.info(`[${path.join(currentDir, paths[i])}] was generated!`);
+    const filePath = path.join(currentDir, paths[i]);
+    const directoryPath = path.dirname(filePath);
+    if (!fs.existsSync(directoryPath)) {
+      fs.mkdirSync(directoryPath, { recursive: true });
+    }
+    fs.writeFile(filePath, strs[i], () => {
+      console.info(`[${filePath}] was generated!`);
     });
   }
 }
